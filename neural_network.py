@@ -3,7 +3,7 @@ import random
 import numpy as np
 from scipy.special import expit
 
-mutation_rate = 0.02
+mutation_rate = 0.07
 mutation_range = 0.5
 
 
@@ -15,7 +15,7 @@ class NeuralNetwork:
         self.weights = []
         self.bias = []
 
-        self.score = 0
+        self.score = 1
 
         self.structure = structure
 

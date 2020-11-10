@@ -5,9 +5,9 @@ from ai import TicTacToePlayer
 from neural_network import NeuralNetwork, crossover
 from tictactoe import TicTacToe
 
-team_size = 100
-brain_structure = [9, 12, 12, 1]
-iterations = 1000
+team_size = 50
+brain_structure = [9, 12, 12, 12, 1]
+# iterations = 10000000
 
 
 def main(args):
@@ -21,12 +21,11 @@ def main(args):
         red_pool.append(NeuralNetwork(brain_structure))
         blue_pool.append(NeuralNetwork(brain_structure))
 
-    for current_iteration in range(0, iterations):
+    current_iteration = 0
+
+    while True:
         red_gene_pool = []
         blue_gene_pool = []
-
-        total_red_score = 0
-        total_blue_score = 0
 
         games_won_red = 0
         games_won_blue = 0
@@ -43,52 +42,51 @@ def main(args):
                 result = get_winner(red_brain, blue_brain)
                 if result == 1:  # The red won
 
-                    red_brain.score += 2
-                    blue_brain.score -= 2
-
-                    total_red_score += 2
-                    total_blue_score -= 2
+                    red_brain.score += 10.0
+                    blue_brain.score -= 10.0
+                    blue_brain.score /= 2.0
 
                     games_won_red += 1
                     games_lost_blue += 1
 
                 elif result == -2:  # Draw
 
+                    # red_brain.score += 1
+                    # blue_brain.score += 1
+
                     draw_red += 1
                     draw_blue += 1
 
                 else:  # The blue won
 
-                    red_brain.score -= 2
-                    blue_brain.score += 2
-
-                    total_red_score -= 2
-                    total_blue_score += 2
+                    blue_brain.score += 10.0
+                    red_brain.score -= 10.0
+                    red_brain.score /= 2.0
 
                     games_lost_red += 1
                     games_won_blue += 1
 
         for red_brain in red_pool:
-            red_gene_pool += ([red_brain] * max(1, red_brain.score))
-        for blue_brain in blue_pool:
-            blue_gene_pool += ([blue_brain] * max(1, blue_brain.score))
+            red_gene_pool += ([red_brain] * max(1, int(red_brain.score)))
+        # for blue_brain in blue_pool:
+        # blue_gene_pool += ([blue_brain] * max(1, blue_brain.score))
 
         # Clearing the old red pool
         red_pool.clear()
-        blue_pool.clear()
+        # blue_pool.clear()
 
         # Creating the pools
         for current_new_network_id in range(0, team_size):
             red_pool.append(crossover(random.choice(red_gene_pool), random.choice(red_gene_pool)))
             # blue_pool.append(crossover(random.choice(blue_gene_pool), random.choice(blue_gene_pool)))
-            blue_pool.append(NeuralNetwork(brain_structure))
+            # blue_pool.append(NeuralNetwork(brain_structure))
 
-        print("Generation {}".format(current_iteration))
-        print("Score red:\t{} \t({}/{}/{}) ({})"
-              .format(total_red_score, games_won_red, draw_red, games_lost_red, len(red_gene_pool)))
-        print("Score blue:\t{} \t({}/{}/{}) ({})"
-              .format(total_blue_score, games_won_blue, draw_blue, games_lost_blue, len(blue_gene_pool)))
-        print()
+        current_iteration += 1
+
+        print("Generation {}:\t{}/{}/{} ({})"
+              .format(current_iteration, games_won_red, draw_red, games_lost_red, len(red_gene_pool)))
+        # print("Score red:\t\t{}/{}/{} ({})".format(games_won_red, draw_red, games_lost_red, len(red_gene_pool)))
+        # print("Score blue:\t\t{}/{}/{} ({})".format(games_won_blue, draw_blue, games_lost_blue, len(blue_gene_pool)))
 
 
 def get_winner(red_brain, blue_brain):
