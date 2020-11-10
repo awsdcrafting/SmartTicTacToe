@@ -27,6 +27,8 @@ class TicTacToe:
                 winner = player_id
             elif self.diag_win(player_id):
                 winner = player_id
+        if np.all(self.game_board != 0) and winner == 0:
+            winner = -2
         return winner
 
     def row_win(self, player_id):

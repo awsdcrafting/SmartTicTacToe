@@ -5,8 +5,8 @@ from ai import TicTacToePlayer
 from neural_network import NeuralNetwork, crossover
 from tictactoe import TicTacToe
 
-team_size = 300
-brain_structure = [9, 20, 20, 1]
+team_size = 100
+brain_structure = [9, 12, 12, 1]
 iterations = 1000
 
 
@@ -102,7 +102,7 @@ def get_winner(red_brain, blue_brain):
     if random.randint(1, 100) <= 50:
         counter += 1
 
-    while len(game.possibilities()) != 0:
+    while game.check_if_won() == 0:
         if counter % 2 == 0:  # Player 1 Turn
             ai_0.make_move(game)
         else:

@@ -3,7 +3,7 @@ import random
 import numpy as np
 from scipy.special import expit
 
-mutation_rate = 0.03
+mutation_rate = 0.02
 mutation_range = 0.5
 
 
@@ -35,11 +35,11 @@ class NeuralNetwork:
         return last_result
 
     def create_weights(self, layer_id):
-        self.weights.append(np.random.uniform(-1, 1, [self.structure[layer_id + 1], self.structure[layer_id]]))
+        self.weights.append(np.random.uniform(0, 1, [self.structure[layer_id + 1], self.structure[layer_id]]))
 
     def create_bias(self, layer_id):
         np.random.seed(random.randint(0, 80))
-        new_bias = np.random.uniform(-1, 1, [self.structure[layer_id], 1])
+        new_bias = np.random.uniform(0, 1, [self.structure[layer_id], 1])
         self.bias.append(new_bias)
 
     def print_weights(self):
