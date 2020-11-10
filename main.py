@@ -52,7 +52,7 @@ def main(args):
                     games_won_red += 1
                     games_lost_blue += 1
 
-                elif result == 0:  # Draw
+                elif result == -2:  # Draw
 
                     draw_red += 1
                     draw_blue += 1
@@ -102,7 +102,7 @@ def get_winner(red_brain, blue_brain):
     if random.randint(1, 100) <= 50:
         counter += 1
 
-    while game.check_if_won() == 0 or len(game.possibilities()) == 0:
+    while game.check_if_won() == 0:
         if counter % 2 == 0:  # Player 1 Turn
             ai_0.make_move(game)
         else:
