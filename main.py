@@ -102,7 +102,7 @@ def get_winner(red_brain, blue_brain):
     if random.randint(1, 100) <= 50:
         counter += 1
 
-    while game.check_if_won() == 0:
+    while game.check_if_won() == 0 or len(game.possibilities()) == 0:
         if counter % 2 == 0:  # Player 1 Turn
             ai_0.make_move(game)
         else:
