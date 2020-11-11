@@ -13,7 +13,7 @@ class TicTacToePlayer:
     def make_move(self, tic_tac_toe_game):
 
         possible_moves = tic_tac_toe_game.possibilities()
-        #print("Possible moves: {}".format(possible_moves))
+        # print("Possible moves: {}".format(possible_moves))
 
         best_move = None
         best_score = None
@@ -33,6 +33,6 @@ class TicTacToePlayer:
         if best_move is None or best_score is None:
             sys.exit("Error: Could not find the best move")
 
-        #print("Best move: {}".format(best_move))
+        # print("Best move: {}".format(best_move))
 
         tic_tac_toe_game.make_move(self.player_id, best_move[0], best_move[1])

@@ -19,7 +19,7 @@ class TicTacToe:
         return [x for x in zip(first, second)]
 
     def check_if_won(self):
-        winner = 0
+        winner = None
         for player_id in [1, -1]:
             if self.row_win(player_id):
                 winner = player_id
@@ -27,8 +27,8 @@ class TicTacToe:
                 winner = player_id
             elif self.diag_win(player_id):
                 winner = player_id
-        if np.all(self.game_board != 0) and winner == 0:
-            winner = -2
+        if np.all(self.game_board != 0) and winner is None:
+            winner = 0
         return winner
 
     def row_win(self, player_id):

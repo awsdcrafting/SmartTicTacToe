@@ -3,7 +3,7 @@ import random
 import numpy as np
 from scipy.special import expit
 
-mutation_rate = 0.07
+mutation_rate = 0.1
 mutation_range = 0.5
 
 
@@ -38,9 +38,7 @@ class NeuralNetwork:
         self.weights.append(np.random.uniform(0, 1, [self.structure[layer_id + 1], self.structure[layer_id]]))
 
     def create_bias(self, layer_id):
-        np.random.seed(random.randint(0, 80))
-        new_bias = np.random.uniform(0, 1, [self.structure[layer_id], 1])
-        self.bias.append(new_bias)
+        self.bias.append(np.random.uniform(0, 1, [self.structure[layer_id], 1]))
 
     def print_weights(self):
         print("Weights:")
@@ -66,45 +64,61 @@ class NeuralNetwork:
 def crossover(network1, network2):
     new_network = NeuralNetwork(structure=network2.structure, initialize_random=False)
 
-    network1_weights = []
-    network2_weights = []
+    # network1_weights = []
+    # network2_weights = []
 
-    for a in network1.weights:
-        for ix, iy in np.ndindex(a.shape):
-            network1_weights.append(a[ix, iy])
-    for b in network2.weights:
-        for ix, iy in np.ndindex(b.shape):
-            network2_weights.append(b[ix, iy])
+    # for a in network1.weights:
+    #    for ix, iy in np.ndindex(a.shape):
+    #        network1_weights.append(a[ix, iy])
+    # for b in network2.weights:
+    #    for ix, iy in np.ndindex(b.shape):
+    #        network2_weights.append(b[ix, iy])
 
-    network1_bias = []
-    network2_bias = []
+    # network1_bias = []
+    # network2_bias = []
 
-    for a in network1.bias:
-        for ix, iy in np.ndindex(a.shape):
-            network1_bias.append(a[ix, iy])
-    for b in network2.bias:
-        for ix, iy in np.ndindex(b.shape):
-            network2_bias.append(b[ix, iy])
+    # for a in network1.bias:
+    #    for ix, iy in np.ndindex(a.shape):
+    #        network1_bias.append(a[ix, iy])
+    #for b in network2.bias:
+    #    for ix, iy in np.ndindex(b.shape):
+    #        network2_bias.append(b[ix, iy])
 
-    weight_divider = random.randint(0, len(network1_weights) - 1)
-    new_weights = network1_weights.copy()[:weight_divider]
-    new_weights.extend(network2_weights[weight_divider:])
+    # weight_divider = random.randint(0, len(network1_weights) - 1)
+    # new_weights = network1_weights.copy()[:weight_divider]
+    # new_weights.extend(network2_weights[weight_divider:])
 
-    bias_divider = random.randint(0, len(network1_bias) - 1)
-    new_bias = network1_bias.copy()[:bias_divider]
-    new_bias.extend(network2_bias[bias_divider:])
+    # bias_divider = random.randint(0, len(network1_bias) - 1)
+    # new_bias = network1_bias.copy()[:bias_divider]
+    # new_bias.extend(network2_bias[bias_divider:])
+
+    new_weights = []
+    new_bias = []
+
+    cut_layer = random.randint(0, len(network1.structure) - 1)
+
+    for current_layer_id in range(0, len(network1.structure) - 1):
+        weight_structure = network1.structure[current_layer_id] * network1.structure[current_layer_id + 1]
+        if current_layer_id < cut_layer:
+            new_bias.extend(network1.bias[current_layer_id].reshape(network1.structure[current_layer_id + 1]))
+            new_weights.extend(network1.weights[current_layer_id].reshape(weight_structure))
+        else:
+            new_bias.extend(network2.bias[current_layer_id].reshape(network1.structure[current_layer_id + 1]))
+            new_weights.extend(network2.weights[current_layer_id].reshape(weight_structure))
+    # print("New Weights:\t{}".format(new_weights))
+    # print("New Bias:\t{}".format(new_bias))
 
     # Mutating Weights
     for current_weight in range(0, len(new_weights)):
         if random.uniform(0, 1) < mutation_rate:
-            new_weights[current_weight] = new_weights[current_weight] + random.uniform(-mutation_range,
-                                                                                       + mutation_range)
+            new_weights[current_weight] = new_weights[current_weight] + random.uniform(-mutation_range, mutation_range)
 
     # Mutating Bias
     for current_bias in range(0, len(new_bias)):
         if random.uniform(0, 1) < mutation_rate:
-            new_bias[current_bias] = new_bias[current_bias] + random.uniform(-mutation_range, + mutation_range)
+            new_bias[current_bias] = new_bias[current_bias] + random.uniform(-mutation_range, mutation_range)
 
+    # Adding the weights to the new network
     start = 0
     for layer_id in range(0, len(network1.structure) - 1):
         stop = start + network1.structure[layer_id] * network1.structure[layer_id + 1]
@@ -113,6 +127,7 @@ def crossover(network1, network2):
             [network1.structure[layer_id + 1], network1.structure[layer_id]]))
         start = stop
 
+    # Adding the bias to the new network
     start = 0
     for layer_id in range(1, len(network1.structure)):
         stop = start + network1.structure[layer_id]

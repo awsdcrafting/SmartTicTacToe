@@ -5,8 +5,8 @@ from ai import TicTacToePlayer
 from neural_network import NeuralNetwork, crossover
 from tictactoe import TicTacToe
 
-team_size = 50
-brain_structure = [9, 12, 12, 12, 1]
+team_size = 250
+brain_structure = [9, 6, 6, 6, 6, 1]
 # iterations = 10000000
 
 
@@ -49,7 +49,7 @@ def main(args):
                     games_won_red += 1
                     games_lost_blue += 1
 
-                elif result == -2:  # Draw
+                elif result == 0:  # Draw
 
                     # red_brain.score += 1
                     # blue_brain.score += 1
@@ -90,6 +90,7 @@ def main(args):
 
 
 def get_winner(red_brain, blue_brain):
+
     ai_0 = TicTacToePlayer(red_brain, 1)
     ai_1 = TicTacToePlayer(blue_brain, -1)
 
@@ -100,7 +101,7 @@ def get_winner(red_brain, blue_brain):
     if random.randint(1, 100) <= 50:
         counter += 1
 
-    while game.check_if_won() == 0:
+    while game.check_if_won() is None:
         if counter % 2 == 0:  # Player 1 Turn
             ai_0.make_move(game)
         else:
@@ -114,8 +115,11 @@ def get_winner(red_brain, blue_brain):
 if __name__ == '__main__':
     main(sys.argv[1:])
 
-    # neural_network_1 = NeuralNetwork([9, 11, 11, 4])
-    # neural_network_2 = NeuralNetwork([9, 11, 11, 4])
+    # neural_network_1 = NeuralNetwork([2, 3, 2], 0)
+    # neural_network_2 = NeuralNetwork([2, 3, 2], 10)
+
+    # neural_network_1.print_network()
+    # neural_network_2.print_network()
 
     # new_network = crossover(neural_network_1, neural_network_2)
 
