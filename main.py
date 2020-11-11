@@ -1,12 +1,17 @@
+import concurrent
 import random
 import sys
+from concurrent.futures.process import ProcessPoolExecutor
 
 from ai import TicTacToePlayer
 from neural_network import NeuralNetwork, crossover
 from tictactoe import TicTacToe
+from concurrent import futures
 
 team_size = 250
-brain_structure = [9, 6, 6, 6, 6, 1]
+brain_structure = [9, 6, 6, 1]
+
+
 # iterations = 10000000
 
 
@@ -27,49 +32,17 @@ def main(args):
         red_gene_pool = []
         blue_gene_pool = []
 
-        games_won_red = 0
-        games_won_blue = 0
+        executor = ProcessPoolExecutor(12)
+        my_future = [executor.submit(evaluate_brain, red_brain, blue_pool) for red_brain in red_pool]
+        concurrent.futures.wait(my_future)
 
-        games_lost_red = 0
-        games_lost_blue = 0
+        best_score = None
 
-        draw_red = 0
-        draw_blue = 0
-
-        # Getting the score for all red networks
-        for red_brain in red_pool:
-            for blue_brain in blue_pool:
-                result = get_winner(red_brain, blue_brain)
-                if result == 1:  # The red won
-
-                    red_brain.score += 10.0
-                    blue_brain.score -= 10.0
-                    blue_brain.score /= 2.0
-
-                    games_won_red += 1
-                    games_lost_blue += 1
-
-                elif result == 0:  # Draw
-
-                    # red_brain.score += 1
-                    # blue_brain.score += 1
-
-                    draw_red += 1
-                    draw_blue += 1
-
-                else:  # The blue won
-
-                    blue_brain.score += 10.0
-                    red_brain.score -= 10.0
-                    red_brain.score /= 2.0
-
-                    games_lost_red += 1
-                    games_won_blue += 1
-
-        for red_brain in red_pool:
-            red_gene_pool += ([red_brain] * max(1, int(red_brain.score)))
-        # for blue_brain in blue_pool:
-        # blue_gene_pool += ([blue_brain] * max(1, blue_brain.score))
+        for b_id in range(0, len(red_pool)):
+            score = my_future[b_id].__getattribute__("_result")
+            if best_score is None or score > best_score:
+                best_score = score
+            red_gene_pool += ([red_pool[b_id]] * max(1, int(score)))
 
         # Clearing the old red pool
         red_pool.clear()
@@ -83,14 +56,24 @@ def main(args):
 
         current_iteration += 1
 
-        print("Generation {}:\t{}/{}/{} ({})"
-              .format(current_iteration, games_won_red, draw_red, games_lost_red, len(red_gene_pool)))
+        print("Generation {}:\t{} ({})".format(current_iteration, best_score, len(red_gene_pool)))
         # print("Score red:\t\t{}/{}/{} ({})".format(games_won_red, draw_red, games_lost_red, len(red_gene_pool)))
         # print("Score blue:\t\t{}/{}/{} ({})".format(games_won_blue, draw_blue, games_lost_blue, len(blue_gene_pool)))
 
 
-def get_winner(red_brain, blue_brain):
+def evaluate_brain(red_brain, blue_pool):
+    for blue_brain in blue_pool:
+        result = get_winner(red_brain, blue_brain)
+        if result == 1:  # The red won
+            red_brain.score += 10.0
+        elif result == 0:  # Draw
+            red_brain.score += 5
+        else:  # The blue won
+            red_brain.score -= 10.0
+    return red_brain.score
 
+
+def get_winner(red_brain, blue_brain):
     ai_0 = TicTacToePlayer(red_brain, 1)
     ai_1 = TicTacToePlayer(blue_brain, -1)
 
